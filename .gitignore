@@ -26,3 +26,4 @@ build/*
 dist/*
 docs/*
 !.placeholder
+creds.json
