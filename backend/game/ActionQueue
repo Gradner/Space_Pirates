@@ -1,0 +1,10 @@
+class ActionQueue {
+  constructor(options){
+    this.queue = [];
+    this.ready = true;
+  }
+
+  doNext () {
+
+  }
+}
