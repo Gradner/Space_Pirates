@@ -1,0 +1,13 @@
+{
+  "steam": {
+    "apiKey": "122CFA2B911EFBE34432DE61E51498F2"
+  },
+  "db": {
+    "url": "ds159772.mlab.com:59772/spacebase",
+    "user": "soiv",
+    "pass": "temp1234"
+  },
+  "jwt": {
+    "secret": "A53sttu"
+  }
+}
