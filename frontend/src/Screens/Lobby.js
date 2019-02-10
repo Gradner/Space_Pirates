@@ -1,6 +1,10 @@
 import React, { Component } from 'react';
-import { Scene, FreeCamera, HemisphericLight, Model, Ground, Skybox } from 'react-babylonjs'
-import { Vector3 } from 'babylonjs'
+import * as BABYLON from 'babylonjs'
+import Game from '../Game/Game'
+import ChatWindow from '../UI/ChatWindow'
+import TargetWindow from '../UI/TargetWindow'
+
+let game = new Game()
 
 class Lobby extends Component {
   constructor(props){
@@ -9,11 +13,7 @@ class Lobby extends Component {
 
   state = {
     players: [],
-    myPlayer: {
-      x: 0,
-      y: 0,
-      z: 0
-    },
+    myPlayer: {x: 0, y: 0, z: 0},
     keys: {
       forward: false,
       backward: false,
@@ -27,6 +27,8 @@ class Lobby extends Component {
   }
 
   componentDidMount() {
+    let canvas = this.refs.gameCanvas
+    game.canvasReady(canvas)
     this.props.socket.on('lobbyData', (players)=>{
       let myPlayer = players.filter(player => player.id === this.props.socket.id)[0];
       this.setState({
@@ -34,13 +36,21 @@ class Lobby extends Component {
         players: players,
         myPlayer: myPlayer
       })
-
+      game.update({myPlayer: myPlayer, players: players})
       this.props.socket.emit('keyUpdate', this.state.keys, ()=> {})
     })
     
     window.addEventListener('keydown', this.keyDown.bind(this));
-
     window.addEventListener('keyup', this.keyUp.bind(this));
+    game.registerOnMeshSelectEvent((meshPicked)=>{
+      let targetPlayer = this.state.players.filter((player)=> player.id === meshPicked.id)[0]
+      this.setState({
+        target: targetPlayer
+      })
+    })
+    window.addEventListener("resize", function () { 
+      if(game){game.resize();}
+    });
   }
 
   keyDown = (e) => {
@@ -86,24 +96,11 @@ class Lobby extends Component {
   }
 
   render() {
-    const players = this.state.players;
-    const camera = {
-      x: this.state.myPlayer.x,
-      z: this.state.myPlayer.z
-    }
     return(
-      <Scene width={this.props.width} height={this.props.height}>
-        <Skybox texture={'/game_assets/skybox/skybox'} infiniteDistance={false}/>
-        <FreeCamera name="camera1" minZ={0.1} maxZ={20000} x={camera.x-3} y={1} z={camera.z-3} target={new Vector3(camera.x, 0, camera.z)}/>
-        <HemisphericLight name="light1" intensity={1} direction={Vector3.Up()} />
-        {players.map((player, index)=>(
-          <Model key={index}
-            rotation={new Vector3(0, player.rotY, 0)} position={new Vector3(player.x, 0, player.z)}
-            rootUrl={'/game_assets/moa/'} sceneFilename="Moa.gltf"
-            scaleToDimension={1}
-          />
-          ))}
-      </Scene>
+      <div width={this.props.width} height={this.props.height}>
+        <TargetWindow target={this.state.target}/>
+        <canvas ref={'gameCanvas'} width={this.props.width} height={this.props.height}/>
+      </div>
     );
   }
 

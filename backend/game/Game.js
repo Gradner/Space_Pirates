@@ -10,8 +10,8 @@ class Game {
     this.playersReady = false;
     this.status = 0;
     this.playerAccel = 0.01;
-    this.maxSpeed = 0.15;
-    this.maxRot = 0.15;
+    this.maxSpeed = 0.25;
+    this.maxRot = 0.02;
   }
 
   addPlayer(io, socket, data) {
