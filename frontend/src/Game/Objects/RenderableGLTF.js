@@ -17,6 +17,7 @@ class RenderableGLTF {
 				this.meshes = newMeshes
 				this.rootMesh = newMeshes[0]
 				this.modelMesh = newMeshes[1]
+				this.modelMesh.isSelectable = true
 			}
 		)
 	}

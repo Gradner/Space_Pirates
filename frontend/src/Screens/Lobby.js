@@ -18,7 +18,8 @@ class Lobby extends Component {
       forward: false,
       backward: false,
       left: false,
-      right: false
+      right: false,
+      attack: false
     }
   }
 
@@ -29,12 +30,19 @@ class Lobby extends Component {
   componentDidMount() {
     let canvas = this.refs.gameCanvas
     game.canvasReady(canvas)
-    this.props.socket.on('lobbyData', (players)=>{
+    this.props.socket.on('lobbyData', (data)=>{
+      let players = data.players
+      let actions = data.actions
+      if(actions[0]){
+        this.chatWindow.appendToHistory(actions)
+      }
       let myPlayer = players.filter(player => player.id === this.props.socket.id)[0];
+      let targetPlayer = players.filter(player=>player.id === this.state.keys.targetid)[0]
       this.setState({
         ...this.state,
         players: players,
-        myPlayer: myPlayer
+        myPlayer: myPlayer,
+        target: targetPlayer
       })
       game.update({myPlayer: myPlayer, players: players})
       this.props.socket.emit('keyUpdate', this.state.keys, ()=> {})
@@ -45,7 +53,11 @@ class Lobby extends Component {
     game.registerOnMeshSelectEvent((meshPicked)=>{
       let targetPlayer = this.state.players.filter((player)=> player.id === meshPicked.id)[0]
       this.setState({
-        target: targetPlayer
+        ...this.state,
+        keys: {
+          ...this.state.keys,
+          targetid: targetPlayer.id
+        }
       })
     })
     window.addEventListener("resize", function () { 
@@ -54,7 +66,17 @@ class Lobby extends Component {
   }
 
   keyDown = (e) => {
+      if(e.keyCode == 27) {
+        if(this.state.target){
+          this.setState({
+            target: null
+          })
+        }
+      }
       let keys = this.state.keys;
+      if(e.keyCode == 81){
+          keys.attack = !keys.attack;
+      }
       if(e.keyCode == 65) {
           keys.left = true // Move ('left');
       } else if(e.keyCode == 68) {
@@ -71,6 +93,13 @@ class Lobby extends Component {
     }
 
   keyUp = (e) => {
+      if(e.keyCode == 27) {
+        if(this.state.target){
+          this.setState({
+            target: null
+          })
+        }
+      }
       let keys = this.state.keys;
       if(e.keyCode == 65) {
           keys.left = false // Move ('left');
@@ -95,11 +124,19 @@ class Lobby extends Component {
     })
   }
 
+  getTargetPlayer = (players) => {
+    let targetPlayer = players.filter(player => player.id === this.state.keys.targetid)
+    this.setState({
+      ...this.state,
+      target: targetPlayer
+    })
+  }
+
   render() {
     return(
       <div width={this.props.width} height={this.props.height} style={{overflow: 'hidden'}}>
         <TargetWindow target={this.state.target}/>
-        <ChatWindow socket={this.props.socket}/>
+        <ChatWindow ref={(chatWindow)=> this.chatWindow = chatWindow}socket={this.props.socket}/>
         <canvas ref={'gameCanvas'} width={this.props.width} height={this.props.height}/>
       </div>
     );

@@ -34,7 +34,8 @@ const style = {
 	history: {
 		height: '131px',
 		overflowY: 'auto',
-		overflowX: 'hidden'
+		overflowX: 'hidden',
+		paddingRight: '17px'
 	},
 	inputContainer: {
 		height: '19px'
@@ -64,9 +65,15 @@ class ChatWindow extends Component {
 	}
 
 	appendToHistory = (data) => {
-		this.setState({
-			history: [...this.state.history, data]
-		})
+		if(Array.isArray(data)){
+			this.setState({
+				history: [...this.state.history, ...data]
+			})
+		} else {
+			this.setState({
+				history: [...this.state.history, data]
+			})
+		}
 		let historyDiv = this.refs.chatHistory;
 		historyDiv.scrollTop = historyDiv.scrollHeight
 	}

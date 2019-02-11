@@ -23,7 +23,7 @@ class Game {
 		this.scene.onPointerDown = (evt, pickResult) =>{
 			if(pickResult.hit){
 				let pickInfo = this.scene.pick(this.scene.pointerX, this.scene.pointerY, (mesh)=>{return mesh;})
-				if(typeof this.onMeshSelect === 'function'){
+				if(typeof this.onMeshSelect === 'function' && pickInfo.pickedMesh.isSelectable){
 					this.onMeshSelect(pickInfo.pickedMesh)
 				}
 			}
