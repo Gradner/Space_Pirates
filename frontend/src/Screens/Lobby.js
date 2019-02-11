@@ -97,8 +97,9 @@ class Lobby extends Component {
 
   render() {
     return(
-      <div width={this.props.width} height={this.props.height}>
+      <div width={this.props.width} height={this.props.height} style={{overflow: 'hidden'}}>
         <TargetWindow target={this.state.target}/>
+        <ChatWindow socket={this.props.socket}/>
         <canvas ref={'gameCanvas'} width={this.props.width} height={this.props.height}/>
       </div>
     );

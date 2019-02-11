@@ -51,12 +51,10 @@ class Game {
   }
 
   updatePlayerMovement(socket, keys) {
-    console.log(socket.userData.currentGameID)
     let p = this.players.find((player)=>{
       return player.id === socket.id
     })
     p.keys = keys
-    console.log(this.players)
   }
 
   updateGame(io) {
@@ -64,7 +62,8 @@ class Game {
       let player = this.players[i];
       if(player.keys.left){ player.rotY -= this.maxRot }
       if(player.keys.right){ player.rotY += this.maxRot }
-      if(player.keys.forward && player.v <= this.maxSpeed){ player.v += this.playerAccel }
+      if(player.keys.forward && player.v < this.maxSpeed){ player.v += this.playerAccel }
+      else if(player.keys.forward && player.v >= this.maxSpeed){ player.v = this.maxSpeed }
       else if(player.keys.backward && player.v >= (this.maxSpeed * -1)){ player.v -= this.playerAccel }
       else { if(Math.abs(player.v) > 0.02) { player.v = (player.v/1.25) } else { player.v = 0 } }
       player.x += player.v * Math.cos(-player.rotY);
