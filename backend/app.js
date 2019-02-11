@@ -10,9 +10,9 @@ var logger = require('morgan');
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
 var session = require('express-session')
-var MongoStore = require('connect-mongodb-session')(session);
-var creds = require('./creds.json')
-var passportSocketIo = require('passport.socketio');
+//var MongoStore = require('connect-mongodb-session')(session);
+//var creds = require('./creds.json')
+//var passportSocketIo = require('passport.socketio');
 
 ///////////////////////////////////////////////////////////////////
 //  Initialization
@@ -21,8 +21,8 @@ var passportSocketIo = require('passport.socketio');
 server.listen(5999);
 console.log('listening for sockets on port 5999')
 
-const dbConnString = 'mongodb://' + creds.db.user + ':' + creds.db.pass + '@' + creds.db.url;
-require('./db').connect(dbConnString);
+//const dbConnString = 'mongodb://' + creds.db.user + ':' + creds.db.pass + '@' + creds.db.url;
+//require('./db').connect(dbConnString);
 
 ///////////////////////////////////////////////////////////////////
 //  Game Management
