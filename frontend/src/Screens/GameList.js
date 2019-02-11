@@ -33,6 +33,7 @@ class GameList extends Component {
 
   componentWillUnmount = () => {
     this.props.socket.off('gameList')
+    this.props.socket.off('userList')
   }
 
   displayGames = (games) => {

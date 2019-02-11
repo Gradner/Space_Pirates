@@ -13,9 +13,7 @@ class Game {
     this.gameHasStarted = false;
     this.playersReady = false;
     this.status = 0;
-    this.playerAccel = 0.01;
-    this.maxSpeed = 0.25;
-    this.maxRot = 0.02;
+    
     this.lastLoopEnd = Date.now()
   }
 
@@ -71,65 +69,15 @@ class Game {
     }
   }
 
+  addToActions(actions) {
+    this.actions.push(...actions)
+  }
+
   updateGame(io) {
     for(var i = 0; i < this.players.length; i++){
       let player = this.players[i];
-      player.attackDelay--
-      if(player.keys.attack){
-        if(player.attackDelay <= 0){
-          let target = this.players.filter((target)=> target.id === player.keys.targetid)[0]
-          let playerv3 = new math3d.Vector3(player.x, player.y, player.z)
-          let targetv3 = new math3d.Vector3(target.x, target.y, target.z)
-          let distance = playerv3.distanceTo(targetv3)
-          if(distance <= player.maxRange){
-            let multiplier = 1
-            let attackType = 'normal'
-            let attackRoll = Math.round(Math.random() * 10)
-            if(attackRoll >= 10){
-              multiplier = 2
-              attackType = 'critical'
-            } else if(attackRoll < 10 && attackRoll > 5) {
-              multiplier += (attackRoll/20)
-              attackType = 'powerful'
-            } else if(attackRoll <= 5 && attackRoll > 2) {
-              multiplier = 1
-              attackType = 'normal'
-            } else {
-              multiplier = 0
-              attackType = 'miss'
-            }
-            let damage = Math.round(player.attackRating * multiplier)
-            target.currentHp -= damage;
-            let action = {
-              player: player.username,
-              target: target.username,
-              datestamp: Date.now(),
-              type: 'attack',
-              ops: {
-                type: attackType,
-                damage: damage
-              }
-            }
-            this.actions.push(action)
-          } else {
-            io.to(player.id).emit('action', {
-              player: player.username,
-              target: target.username,
-              type: 'outOfRange',
-              ops: {}
-            })
-          }
-          player.attackDelay = 10
-        }
-      }
-      if(player.keys.left){ player.rotY -= this.maxRot }
-      if(player.keys.right){ player.rotY += this.maxRot }
-      if(player.keys.forward && player.v < this.maxSpeed){ player.v += this.playerAccel }
-      else if(player.keys.forward && player.v >= this.maxSpeed){ player.v = this.maxSpeed }
-      else if(player.keys.backward && player.v >= (this.maxSpeed * -1)){ player.v -= this.playerAccel }
-      else { if(Math.abs(player.v) > 0.02) { player.v = (player.v/1.25) } else { player.v = 0 } }
-      player.x += player.v * Math.cos(-player.rotY);
-      player.z += player.v * Math.sin(-player.rotY);
+      let actions = player.update(this.players, io)
+      this.addToActions(actions)      
       if(i === this.players.length - 1){
         io.to(this.socketUrl).emit('lobbyData', {players: this.players, actions: this.actions})
         this.actions = [];

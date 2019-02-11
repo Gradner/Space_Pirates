@@ -62,6 +62,7 @@ class ChatWindow extends Component {
 	componentDidMount() {
 		window.addEventListener('keydown', this.keyDown.bind(this));
 		this.props.socket.on('chatMessage', (data)=>{this.appendToHistory(data)})
+		this.props.socket.on('action', (data)=>{this.appendToHistory(data)})
 	}
 
 	appendToHistory = (data) => {
@@ -92,7 +93,7 @@ class ChatWindow extends Component {
 	      		this.chatInput.blur()
 	      	}
       	} else {
-      		this.chatInput.focus()
+      		this.chatButtonClicked()
       	}
       }
 	}
@@ -112,20 +113,15 @@ class ChatWindow extends Component {
 			right: newRight,
 			duration: 400,
 			complete: (anim)=>{
+				if(opposite){
+					this.chatInput.focus()
+				}
 				this.setState({
 					chatDisplayed: opposite,
 					canClick: true
 				})
 			}
 		})
-	}
-
-	onNewPlayerMsg = () => {
-
-	}
-
-	onNewSysMsg = () => {
-
 	}
 
 	onSendMsg = () => {

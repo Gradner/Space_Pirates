@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import moment from 'moment'
 
-const style = {
+let style = {
 	width: '400px',
 	display: 'block',
 	wordWrap: 'break-word'
@@ -17,6 +17,10 @@ class ChatMessage extends Component {
 		switch(msg.type){
 			case 'attack':
 				return this.attackToString(msg)
+			case 'outOfRange':
+				return 'Your Target is Out of Range!'
+			case 'selfAttack':
+				return 'You cannot attack yourself!'
 		}
 	}
 
@@ -47,6 +51,15 @@ class ChatMessage extends Component {
 		}
 	}
 
+	getColor = () => {
+		switch(this.props.message.type){
+			case 'playerMsg':
+				return 'black';
+			case 'attack':
+				return 'red'
+		}
+	}
+
 	getChatString = () =>{
 		let msg = this.props.message
 		let string = ''
@@ -58,9 +71,11 @@ class ChatMessage extends Component {
 
 	render(){
 		const string = (this.props.message.type === 'playerMsg') ? this.getChatString() : this.getSystemString();
+		const color = this.getColor()
 		return(
 			<span
-				style={style}
+				ref={(messageSpan)=>{this.messageSpan = messageSpan}}
+				style={{...style, color: color}}
 			>
 				{string}
 			</span>
