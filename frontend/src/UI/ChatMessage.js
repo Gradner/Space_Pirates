@@ -18,9 +18,11 @@ class ChatMessage extends Component {
 			case 'attack':
 				return this.attackToString(msg)
 			case 'outOfRange':
-				return 'Your Target is Out of Range!'
+				return this.formatDate(msg.datestamp) + 'Your Target is Out of Range!'
 			case 'selfAttack':
-				return 'You cannot attack yourself!'
+				return this.formatDate(msg.datestamp) + 'You cannot attack yourself!'
+			case 'kill':
+				return this.killToString(msg)
 		}
 	}
 
@@ -35,6 +37,15 @@ class ChatMessage extends Component {
 		string += this.getAttackDesc(msg.ops.type)
 		string += msg.target + ' '
 		string += 'for ' + msg.ops.damage + ' Hit Points'
+		return string
+	}
+
+	killToString = (msg) => {
+		let string = ''
+		string += this.formatDate(msg.datestamp)
+		string += msg.player + ' '
+		string += 'has killed '
+		string += msg.target + ' '
 		return string
 	}
 

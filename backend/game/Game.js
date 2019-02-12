@@ -30,20 +30,20 @@ class Game {
         this.hostID = playerID;
       }
       let newPlayer = new Player({
-          username: username,
-          id: playerID,
-          x: 0,
-          y: 0,
-          z: 0,
-          v: 0,
-          rotY: 0,
-          keys: {},
-          maxHp: 1300,
-          currentHp: 1300,
-          attackDelay: 10,
-          maxRange: 20,
-          attackRating: 23
-        });
+        username: username,
+        id: playerID,
+        x: 0,
+        y: 0,
+        z: 0,
+        v: 0,
+        rotY: 0,
+        keys: {},
+        maxHp: 1300,
+        currentHp: 1300,
+        attackDelay: 10,
+        maxRange: 20,
+        attackRating: 23
+      });
       this.players.push(newPlayer)
       socket.userData.currentGameID = this.gameID;
       console.log(JSON.stringify(this))
@@ -54,6 +54,8 @@ class Game {
 
   removePlayer(socket) {
     console.log('removing user ' + socket.id + ' from game ' + this.gameID)  
+    socket.userData.currentGameID = null;
+    socket.emit('changeGameState', 1)
     let players = this.players.filter((player)=>{
       return player.id !== socket.id
     })
@@ -76,6 +78,9 @@ class Game {
   updateGame(io) {
     for(var i = 0; i < this.players.length; i++){
       let player = this.players[i];
+      if(player.currentHp <= 0){
+        this.removePlayer(io.sockets.connected[player.id])
+      }
       let actions = player.update(this.players, io)
       this.addToActions(actions)      
       if(i === this.players.length - 1){

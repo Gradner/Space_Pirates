@@ -38,6 +38,7 @@ class Lobby extends Component {
       }
       let myPlayer = players.filter(player => player.id === this.props.socket.id)[0];
       let targetPlayer = players.filter(player=>player.id === this.state.keys.targetid)[0]
+      if(!targetPlayer){targetPlayer = null}
       this.setState({
         ...this.state,
         players: players,
@@ -130,6 +131,12 @@ class Lobby extends Component {
       ...this.state,
       target: targetPlayer
     })
+  }
+
+  componentWillUnmount(){
+    this.props.socket.off('lobbyData')
+    window.removeEventListener('keydown', this.keyDown.bind(this));
+    window.removeEventListener('keyup', this.keyUp.bind(this));
   }
 
   render() {

@@ -62,9 +62,14 @@ class App extends Component {
   }
 
   changeGameState = (requestedState) => {
-    this.setState({
-      gameState: requestedState,
-    })
+    if(this.state.gameState === 2){
+      this.setState({activeGame: {}, gameState: 1})
+    } else {
+      this.setState({
+        gameState: requestedState,
+      })
+    }
+    
   }
 
   userLogin = (data) => {
