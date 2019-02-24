@@ -5,7 +5,6 @@ module.exports = function(io, users, games){
   io.on('connection', (socket)=>{
 
     console.log(socket.id + ' has connected to the server')
-    io.emit('userList', users);
 
     socket.on('login', (data)=>{
       uidInt++

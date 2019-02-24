@@ -1,11 +1,31 @@
 var Game = require('./Game.js');
 
+const systems = [
+  {name: 'Procyon', x: 19, y: 38},
+  {name: 'Kleirs', x: -41, y: 32},
+  {name: 'Yuen', x: -11, y: 6},
+  {name: 'Urantuas', x: -13, y: 5},
+  {name: 'Vrias', x: 41, y: 48},
+  {name: 'Sol', x: -25, y: 1},
+  {name: 'Kith', x: 22, y: 29},
+  {name: 'Trax', x: -30, y: 23},
+  {name: 'Ago', x: -31, y: -20},
+  {name: 'Atheizla', x: -14, y: 8},
+  {name: 'Greuth', x: 22, y: 49},
+  {name: 'Xei', x: 0, y: 26},
+  {name: 'Lukkor', x: -16, y: 47},
+  {name: 'Exel', x: 8, y: 39},
+  {name: 'Thaed', x: -28, y: 45}
+]
+
+
 class GameList {
   constructor(options){
     this.idCount = options.idCount || 0;
     this.list = options.list || [];
     this.maxGames = options.maxGames || 12;
     this.readyForPlayers = options.ready || true;
+    systems.forEach((system)=>{this.createGame(system)})
   }
 
   getNewGameID(){
@@ -13,21 +33,20 @@ class GameList {
     return this.idCount
   }
 
-  createGame(io, socket, data){
+  createGame(gameData){
     console.log('create new game requested')
     var newgame = new Game({
       gameID: this.getNewGameID(),
-      host: socket.userData.username,
-      roomName: 'new created room ' + this.idCount,
-      socketUrl: 'game' + this.idCount
+      roomName: gameData.name,
+      socketUrl: 'zone' + this.idCount,
+      x: gameData.x,
+      y: gameData.y
     })
     if(!this.list.includes(newgame)){
       this.list.push(newgame);
-      this.addPlayer(io, socket, {gameid: newgame.gameID})
     } else {
       console.log('Could not create game, ' + newgame.roomName + ' already exists')
     }
-    io.emit('gameList', this.list);
   }
 
   addPlayer(io, socket, data){

@@ -5,15 +5,12 @@ class Game {
   constructor(options){
     this.gameID = options.gameID || '0';
     this.roomName = options.roomName || 'Game';
+    this.x = options.x;
+    this.y = options.y;
     this.players = [];
-    this.hostID = {};
     this.actions = [];
-    this.maxPlayers = options.maxPlayers || 8;
     this.socketUrl = options.socketUrl;
-    this.gameHasStarted = false;
-    this.playersReady = false;
     this.status = 0;
-    
     this.lastLoopEnd = Date.now()
   }
 

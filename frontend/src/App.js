@@ -17,7 +17,7 @@ import Lobby from './Screens/Lobby'
 //  Intialization
 ///////////////////////////////////////////////////////////////////
 
-const socket = io('http://localhost:5999')
+const socket = io('http://kewshit.com:5999')
 
 ///////////////////////////////////////////////////////////////////
 //  Class Definition
@@ -46,10 +46,6 @@ class App extends Component {
       this.changeGameState(requestedState);
     })
 
-  }
-
-  componentWillMount() {
-    
   }
 
   componentDidMount () {
