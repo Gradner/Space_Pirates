@@ -34,6 +34,7 @@ class PlayerMGR {
 			...player,
 			scene: this.scene
 		});
+		console.log(this.scene)
 		newPlayer.addToScene()
 		this.players.push(newPlayer)
 	}
@@ -65,11 +66,11 @@ class PlayerMGR {
 	update = (update) => {
 		this.checkForNewPlayers(update.players)
 		this.removeDisconnectedPlayers(update.players)
+		this.playerData = update.players;
 		this.players.forEach((player) => {
 			let playerData = this.playerData.filter((data) => data.id === player.id)
 			player.update(playerData);
 		})
-		this.playerData = update.players;
 	}
 }
 

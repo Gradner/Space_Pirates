@@ -101,15 +101,15 @@ class Player {
 		else if(this.keys.forward && this.v >= this.maxSpeed){ this.v = this.maxSpeed }
 		else if(this.keys.backward && this.v >= (this.maxSpeed * -1)){ this.v -= this.playerAccel }
 		else { if(Math.abs(this.v) > 0.02) { this.v = (this.v/1.25) } else { this.v = 0 } }
-		this.x += this.v * Math.cos(-this.rotY);
-		this.z += this.v * Math.sin(-this.rotY);
+		this.x += this.v * Math.cos(this.rotY);
+		this.z += this.v * Math.sin(this.rotY);
 	}
 
 	update (players, io, actionHandler) {
 		this.delayRemaining--
 		if(this.keys.attack){
 			if(this.delayRemaining <= 0){
-				this.attack(players, io)
+        this.attack(players, io)
 				this.delayRemaining = this.attackDelay
 			}
 		}

@@ -143,6 +143,12 @@ class ChatWindow extends Component {
 		})
 	}
 
+	componentWillUnmount(){
+		window.removeEventListener('keydown', this.keyDown.bind(this));
+		this.props.socket.off('chatMessage')
+		this.props.socket.off('action')
+	}
+
 	render(){
 		const history = this.state.history
 		return(

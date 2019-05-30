@@ -1,0 +1,21 @@
+newmtl shape0
+Ka 0.5 0.5 0.5
+Kd 1 1 1
+Ks 1 1 1
+illum 7
+Ns 256
+map_Kd mca2_t1_d.dds
+newmtl shape1
+Ka 0.5 0.5 0.5
+Kd 1 1 1
+Ks 1 1 1
+illum 7
+Ns 256
+map_Kd mca2_t1_n.dds
+newmtl shape2
+Ka 0.5 0.5 0.5
+Kd 1 1 1
+Ks 1 1 1
+illum 7
+Ns 256
+map_Kd 

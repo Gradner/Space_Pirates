@@ -7,6 +7,7 @@ class GameScene extends Scene {
 		this.width = options.width;
 		this.height = options.height;
 		this.renderer = options.renderer;
+		this.uiRenderer = options.uiRenderer;
 		this.camera = options.camera || new DefaultCamera({width: this.width, height: this.height});
 		this.add(this.camera)
 		this.skybox = options.skybox || new Skybox;
@@ -20,6 +21,7 @@ class GameScene extends Scene {
 	animate(){
 		this.loop = requestAnimationFrame(this.animate.bind(this));
 		this.renderer.render(this, this.camera);
+		this.uiRenderer.render(this, this.camera);
 	}
 
 	destroyScene(){

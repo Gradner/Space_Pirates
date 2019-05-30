@@ -64,8 +64,11 @@ class GameList extends Component {
       })
     })
 
-    window.addEventListener('systemSelected', function(e){
-      console.log(e)
+    window.addEventListener('systemSelected', this.selectSystem.bind(this))
+  }
+
+  selectSystem = (e) => {
+    console.log(e)
       this.setState({
         selectedGame: e.detail.system
       })
@@ -77,16 +80,12 @@ class GameList extends Component {
           console.log(this.state.selectedGame)
         }.bind(this)
       })
-    }.bind(this))
-  }
-
-  selectSystem = () => {
-
   }
 
   componentWillUnmount(){
     this.props.socket.off('gameList')
     this.props.socket.off('userList')
+    window.removeEventListener('systemSelected', this.selectSystem.bind(this))
   }
 
   fetchGames = () => {

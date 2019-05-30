@@ -61,7 +61,7 @@ class App extends Component {
   componentDidMount () {
     this.resizeClient()
     window.addEventListener("resize", this.resizeClient.bind(this) );
-    game.attachCanvas(this.refs.gameCanvas)
+    game.attachCanvas(this.refs.gameCanvas, this.refs.uiCanvas)
   }
 
   componentWillUnmount() {

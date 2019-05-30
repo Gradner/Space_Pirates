@@ -1,9 +1,15 @@
 import GameScene from './GameScene';
 import { System } from '../GameObjects'
-//import PlayerMGR from '../Managers/PlayerMGR'
+import PlayerMGR from '../Managers/PlayerMGR'
 import anime from 'animejs'
 import * as HumanInput from 'humaninput'
-import { Raycaster, Vector3, Vector2 } from 'three';
+import { 
+	Raycaster,
+ 	Vector3,
+ 	Vector2,
+ 	PerspectiveCamera
+ } from 'three';
+
 eval( 'window.__VERSION__ = 0' )
 
 
@@ -12,7 +18,7 @@ class SystemScene extends GameScene {
 		super(options)
 		this.socket = options.socket;
 		this.players = [];
-		this.target = {};
+		this.target = '';
 		this.keys = {
 	      forward: false,
 	      backward: false,
@@ -24,9 +30,14 @@ class SystemScene extends GameScene {
 	      this.players = data.players
 	      this.myPlayer = this.players.filter(player => player.id === this.socket.id)[0];
 	      this.targetPlayer = this.players.filter(player=>player.id === this.keys.targetid)[0]
+	      if(!this.targetPlayer){
+	      	this.keys.targetid = null
+	      }
 	      this.socket.emit('keyUpdate', this.keys, ()=> {})
+	      this.PlayerMGR.update({
+	      	players: this.players
+	      })
 	    })
-		this.moveCameraToTopview();
 		this.mouse = new Vector2(0, 0);
 		this.raycaster = new Raycaster();
 		this.keyDownFunc = this.keyDown.bind(this);
@@ -35,6 +46,12 @@ class SystemScene extends GameScene {
 		window.addEventListener('keydown', this.keyDownFunc, true);
 		window.addEventListener('keyup', this.keyUpFunc, true);
 		window.addEventListener('mousedown', this.clickFunction, true);
+		this.camera = new PerspectiveCamera(45, this.width/this.height, 1, 10000)
+		this.camera.position.set(0, 20, 45)
+		this.camera.lookAt(0, 0, 0)
+		this.PlayerMGR = new PlayerMGR({
+			scene: this
+		})
 	}
 
 	keyDown(e){
@@ -45,6 +62,7 @@ class SystemScene extends GameScene {
       }
       if(e.keyCode == 81){
           this.keys.attack = !this.keys.attack;
+          console.log(this.keys.attack)
       }
       if(e.keyCode == 65) {
           this.keys.left = true // Move ('left');
@@ -63,9 +81,6 @@ class SystemScene extends GameScene {
         	this.target = null
         }
       }
-      if(e.keyCode == 81){
-          this.keys.attack = !this.keys.attack;
-      }
       if(e.keyCode == 65) {
           this.keys.left = false // Move ('left');
       } else if(e.keyCode == 68) {
@@ -82,118 +97,21 @@ class SystemScene extends GameScene {
         this.mouse.y =  - (e.clientY / this.height) * 2 + 1;
         this.raycaster.setFromCamera(this.mouse, this.camera)
         let intersects = this.raycaster.intersectObjects(this.children)
-        console.log(intersects)
         if(intersects.length > 0){
-        	console.log(intersects[0].object.name)
-        	this.updateCameraPos(intersects[0].object, this.selectSystem, this)
+        	if(intersects[0].object.isTargetable){
+        		this.keys.targetid = intersects[0].object.userid
+        		this.target = this.players.filter((player)=>{ return player.id === this.keys.targetid })
+        	}
         }
 	}
 
-	selectSystem(system, scene){
-		console.log(scene.games)
-		console.log(system.name)
-		let selectedGame = scene.games.find((game) =>{return game.roomName === system.name})
-		console.log(selectedGame)
-		let systemSelect = new CustomEvent('systemSelected', {
-			detail: {
-				system: selectedGame
-			}
-		})
-		window.dispatchEvent(systemSelect)
-	}
-
-	updateCameraPos(system, callback, scene){
-		anime({
-			targets: this.camera.position,
-			x: system.position.x,
-			z: system.position.z,
-			easing: 'linear',
-			complete: function(){
-				if(typeof callback === 'function'){
-					callback(system, scene)
-				}
-			}
-		})
-	}
-
-	updateGameList(games){
-		console.log(games)
-		this.checkForNewGames(games)
-		this.removeDisconnectedGames(games)
-		this.games = games;
-	}
-
-	moveCameraToTopview(){
-		let camera = this.camera;
-		let scene = this;
-		camera.lookAt(0, -1, 0)
-		anime({
-			targets: camera.position,
-			y: 50,
-			easing: 'linear',
-			update: function(){
-				console.log(scene)
-			},
-			complete: function(){
-				camera.lookAt(0, 0, 0)
-			}
-		})
-	}
-
-	checkForNewGames(newGameData){
-		if(this.games === []){
-			newGameData.forEach((game)=>{
-				this.addGameToScene(game)
-			})
-		} else if (this.games === newGameData){
-			return
-		} else {
-			let newGames = [];
-			newGameData.forEach((newGame)=>{
-				let g2a = this.games.filter((game)=> game.gameID === newGame.gameID);
-				if(!g2a[0]){
-					newGames.push(newGame)
-				}
-			})
-			newGameData.filter((game)=> !this.games.includes(game))
-			newGames.forEach((game)=>{
-				this.addGameToScene(game)
-			})
-		}
-	}
-
-	addGameToScene(newGame){
-		let game = new System(newGame);
-		this.add(game.mesh)
-	}
-
-	removeDisconnectedGames(newGameData){
-		if(newGameData === []){
-			this.games.forEach((game)=>{
-				this.removeGameFromScene(game)
-			})
-		} else if (newGameData === this.games) {
-			return
-		} else {
-			this.games.forEach((oldGame)=>{
-				let g2r = newGameData.filter((game)=> game.gameID === oldGame.gameID);
-				if(!g2r[0]){
-					this.removeGameFromScene(oldGame)
-				}
-			})
-		}
-	}
-
-	removeGameFromScene(oldGame){
-		let game = this.children.find((game)=> game.name === oldGame.name)
-		if(game){
-			this.remove(game)
-		}
-	}
-
 	animate(){
+		if(this.myPlayer){
+			//this.camera.position.set( this.myPlayer.position )
+		}
 		this.loop = requestAnimationFrame(this.animate.bind(this));
 		this.renderer.render(this, this.camera);
+		this.uiRenderer.render(this, this.camera);
 	}
 
 	destroyScene(){
@@ -201,6 +119,7 @@ class SystemScene extends GameScene {
 		window.removeEventListener('keyup', this.keyUpFunc, true)
 		window.removeEventListener('mousedown', this.clickFunction, true)
 		cancelAnimationFrame(this.loop);
+		document.getElementById('labelContainer').innerHTML = ''
 		this.dispose()
 	}	
 }

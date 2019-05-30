@@ -5,4 +5,4 @@ import System from './System'
 import Player from './Player'
 
 
-export { Skybox, DefaultCamera, System };
+export { Skybox, DefaultCamera, System, Renderable, Player };

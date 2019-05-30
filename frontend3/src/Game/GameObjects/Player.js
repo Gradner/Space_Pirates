@@ -3,8 +3,9 @@ import anime from 'animejs'
 import {
 	Vector3,
 	Quaternion,
-
+	Euler
 } from 'three'
+import { CSS2DObject } from 'three-css2drender'
 
 class Player extends Renderable {
 	constructor(options){
@@ -16,6 +17,18 @@ class Player extends Renderable {
 		this.z = options.z
 		this.rotY = options.rotY
 		this.keys = options.keys
+		this.mesh.name = options.username
+		this.mesh.userid = options.id
+		this.mesh.isTargetable = true;
+	}
+
+	attachLabel = () => {
+		let labelBox = document.createElement('div');
+		labelBox.textContent = this.username
+		labelBox.style.color = '#fff'
+		let playerLabel = new CSS2DObject(labelBox);
+		playerLabel.position.set(0, 5, 0);
+		this.mesh.add(playerLabel)
 	}
 
 	updatePosition = () => {
@@ -31,9 +44,8 @@ class Player extends Renderable {
 
 	updateRotation = () => {
 		let axis = new Vector3(0, 1, 0);
-		let angle = this.rotation - Math.PI;
-		let quaternion = new Quaternion.setFromAxisAngle(axis, angle);
-		this.mesh.rotationQuaternion = quaternion
+		let angle = this.rotation - Math.PI/2;
+		this.mesh.quaternion.setFromAxisAngle(axis, -angle);
 	}
 
 	update = (update) => {
