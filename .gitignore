@@ -22,6 +22,7 @@ npm-debug.log
 add-on/
 bower_components/
 node_modules/
+frontend_babylon/
 build/*
 dist/*
 docs/*

@@ -1,4 +1,35 @@
 import React, { Component } from 'react';
+import anime from 'animejs'
+
+const style = {
+  systemBox: {
+    padding: '10px',
+    margin: 'auto',
+    width: '200px',
+    borderRadius: '5px',
+    border: '2px solid black',
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    boxShadow: '0px 0px 10px #70a6ff',
+    position: 'absolute',
+    top: '10px',
+    left: '10px',
+    opacity: 0
+  },
+  button: {
+    height: '30px',
+    width: '50%',
+  },
+  gameLogo: {
+    textAlign: 'center',
+    fontSize: '50px',
+    color: '#ffffff',
+    textShadow: '0px 0px 20px #70a6ff'
+  },
+  boxTitle: {
+    color: '#ffffff',
+    textShadow: '0px 0px 10px #70a6ff'
+  }
+}
 
 class GameList extends Component {
   constructor(props){
@@ -7,7 +38,10 @@ class GameList extends Component {
 
   state = {
     games: [],
-    activeGame: {},
+    selectedGame: {
+      name: '',
+      players: ''
+    },
     joinedGame: false,
     gameState: 0,
   }
@@ -29,55 +63,49 @@ class GameList extends Component {
         users: users,
       })
     })
+
+    window.addEventListener('systemSelected', this.selectSystem.bind(this))
+  }
+
+  selectSystem = (e) => {
+    console.log(e)
+      this.setState({
+        selectedGame: e.detail.system
+      })
+      anime({
+        targets: this.refs.systemBox,
+        opacity: 1,
+        easing: 'linear',
+        complete: function(){
+          console.log(this.state.selectedGame)
+        }.bind(this)
+      })
   }
 
   componentWillUnmount(){
     this.props.socket.off('gameList')
     this.props.socket.off('userList')
-  }
-
-  displayGames = (games) => {
-    if(games.length < 1){
-      return(<div>No Games Currently Available</div>)
-    } else {
-      return(
-        <div>
-        {games.map((game, index)=>(
-          <div key={index}>
-            <h3>{game.roomName}</h3>
-            <span>Current Players: {game.players.length}</span>
-            <button onClick={() => this.joinGame({gameid: game.gameID})}>Join Game</button>
-            <button onClick={() => this.gameInfo()}>Game Details</button>
-            <button onClick={() => this.deleteGame({gameid: game.gameID})}>Delete Game</button>
-          </div>
-          ))}
-        </div>
-      )
-    }
+    window.removeEventListener('systemSelected', this.selectSystem.bind(this))
   }
 
   fetchGames = () => {
     this.props.socket.emit('fetchGames', ()=> { console.log('Requested Games') })
   }
 
-  createGame = () => {
-    this.props.socket.emit('createGame', ()=> { console.log('Created New Game') })
-  }
-
-  deleteGame = (data) => {
-    this.props.socket.emit('deleteGame', data, ()=> { console.log('Requesting Game Deletion') })
-  }
-
-  joinGame = (data) => {
+  _joinGame = () => {
+    let data = {gameid: this.state.selectedGame.gameID}
+    console.log(data)
     this.props.socket.emit('joinGame', data, ()=> { console.log('Attempting to join game') })
   }
 
   render() {
     return (
       <div>
-        {this.displayGames(this.state.games)}
-        <button onClick={() => this.fetchGames()}>Refresh Game List</button>
-        <button onClick={() => this.createGame()}>Create New Game</button>
+        <div ref={'systemBox'} style={style.systemBox}>
+          <h2 style={style.boxTitle}>{this.state.selectedGame.roomName}</h2>
+          <p style={style.boxText}>{this.state.selectedGame.players.length} Players in System</p>
+          <button style={style.button} onClick={this._joinGame}>Warp to System</button>
+        </div>
       </div>
     );
   }

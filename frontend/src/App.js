@@ -4,11 +4,13 @@
 
 import React, { Component } from 'react';
 import io from 'socket.io-client'
+import Game from './Game'
 
 ///////////////////////////////////////////////////////////////////
 //  Components
 ///////////////////////////////////////////////////////////////////
 
+import UI from './UI/UI'
 import Login from './Screens/Login'
 import GameList from './Screens/GameList'
 import Lobby from './Screens/Lobby'
@@ -17,7 +19,10 @@ import Lobby from './Screens/Lobby'
 //  Intialization
 ///////////////////////////////////////////////////////////////////
 
-const socket = io('http://kewshit.com:5999')
+const socket = io('http://localhost:5999')
+const game = new Game({
+  socket: socket
+})
 
 ///////////////////////////////////////////////////////////////////
 //  Class Definition
@@ -43,14 +48,20 @@ class App extends Component {
 
     socket.on('changeGameState', (requestedState)=>{
       console.log('Server has requested change to gamestate ' + requestedState)
+      game.changeGameState(requestedState);
       this.changeGameState(requestedState);
     })
 
   }
 
+  componentWillMount() {
+    
+  }
+
   componentDidMount () {
     this.resizeClient()
     window.addEventListener("resize", this.resizeClient.bind(this) );
+    game.attachCanvas(this.refs.gameCanvas, this.refs.uiCanvas)
   }
 
   componentWillUnmount() {
@@ -76,6 +87,9 @@ class App extends Component {
   resizeClient(){
     let width = window.innerWidth;
     let height = window.innerHeight;
+    if(game.canvasAttached){
+      game.resize()
+    }
     this.setState({
       ...this.state,
       windowWidth: width,
@@ -115,7 +129,10 @@ class App extends Component {
   render() {
     return (
       <div>
-        {this.getScreen(this.state.gameState)}
+        <canvas ref={'gameCanvas'} width={this.state.windowWidth} height={this.state.windowHeight}/>
+        <UI>
+          {this.getScreen(this.state.gameState)}
+        </UI>
       </div>
     );
   }
