@@ -1,5 +1,3 @@
-
-
 module.exports = function(io, games){
   io.on('connection', (socket)=>{
     socket.on('keyUpdate', (data)=>{
@@ -35,7 +33,7 @@ module.exports = function(io, games){
 
   let gamelist = games.list
   setInterval((games)=>{
-  	for(var i = 0; i < gamelist.length; i++){
+    for(var i = 0; i < gamelist.length; i++){
   		gamelist[i].updateGame(io)
   	}
   }, 60)

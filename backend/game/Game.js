@@ -1,4 +1,7 @@
 const math3d = require('math3d');
+const THREE = require('three');
+const phys = require('cannon');
+
 let Player = require('./Player')
 
 class Game {
@@ -73,6 +76,7 @@ class Game {
   }
 
   updateGame(io) {
+    let start = Date.now()
     for(var i = 0; i < this.players.length; i++){
       let player = this.players[i];
       if(player.currentHp <= 0){
@@ -85,6 +89,8 @@ class Game {
         this.actions = [];
       }
     }
+    this.world.step()
+    let end = 
   }
 }
 

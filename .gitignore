@@ -23,6 +23,10 @@ add-on/
 bower_components/
 node_modules/
 frontend_babylon/
+backend_spacepirates/
+frontend_spacepirates/
+physijs-webpack/
+cannon/
 build/*
 dist/*
 docs/*
