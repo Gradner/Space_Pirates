@@ -7,7 +7,7 @@
   },
   "dependencies": {
     "ammo.js": "github:kripken/ammo.js",
-    "bcrypt": "^3.0.2",
+    "bcrypt": "^5.0.0",
     "bluebird": "^3.5.2",
     "cannon": "^0.6.2",
     "connect-mongodb-session": "^2.0.3",
