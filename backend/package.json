@@ -27,7 +27,7 @@
     "passport-steam": "^1.0.10",
     "passport.socketio": "^3.7.0",
     "physijs-webpack": "^0.1.3",
-    "socket.io": "^2.1.1",
+    "socket.io": "^2.5.0",
     "three": "^0.109.0",
     "three-pathfinding": "^0.11.0"
   },
